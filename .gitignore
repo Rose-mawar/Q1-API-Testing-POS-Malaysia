@@ -1,0 +1,22 @@
+# Postman files to ignore
+postman/backup/
+postman/collections/temp/
+postman/environments/temp/
+postman/workspaces/
+postman/cloud/
+postman-agent.log
+
+# Environment files (API keys, secrets)
+.env
+postman/global_environment.json
+postman/local_environment.json
+
+# Postman cache
+~/Library/Application Support/Postman
+%APPDATA%\Postman
+~/.config/Postman
+
+# OS-specific files
+.DS_Store   # macOS Finder metadata
+Thumbs.db   # Windows Explorer metadata
+
