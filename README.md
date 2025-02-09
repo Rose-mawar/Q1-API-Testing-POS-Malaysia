@@ -43,7 +43,5 @@
    - Select the **Q1 API Testing POS Malaysia** environment.
 5. Click **Run Collection** to execute the tests.
 
-## Contact
 
-If you encounter any issues or have questions, feel free to contact me at **ct.rosmawati86@gmail.com** and WhatsApp me on **01115108880**.
 
