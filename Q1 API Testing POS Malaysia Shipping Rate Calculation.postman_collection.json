@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "ff809c6b-d9ff-4e7c-8f60-03392b1a154a",
+		"name": "Q1 API Testing POS Malaysia Shipping Rate Calculation",
+		"description": "# POS Malaysia API Collection Overview\n\nThis collection provides automated test cases for various POS Malaysia APIs. The tests include validation for positive and negative scenarios, ensuring API functionality, performance, and reliability. Below is an overview of the API structure and the functionalities they provide.\n\n## APIs in this Collection\n\n### 1\\. **Get Countries API**\n\n- **Endpoint**: `/countries`\n    \n- **Purpose**: Fetches a list of all countries supported by the POS Malaysia services.\n    \n- **Scenarios Tested**:\n    \n    - Positive Testing: Valid URL and successful response.\n        \n    - Negative Testing: Invalid or incorrect endpoint.\n        \n\n### 2\\. **Get States API**\n\n- **Endpoint**: `/getStateByPostcode`\n    \n- **Purpose**: Retrieves the state, city, and other details based on the provided postal code.\n    \n- **Scenarios Tested**:\n    \n    - Positive Testing: Valid postal code returns correct state and city details.\n        \n    - Negative Testing: Invalid postal code or incorrect endpoint.\n        \n\n### 3\\. **Rate Calculator API**\n\n- **Endpoint**: `/price`\n    \n- **Purpose**: Calculates the shipping rate based on provided details such as weight, sender and receiver postcodes, and country.\n    \n- **Scenarios Tested**:\n    \n    - Positive Testing: Valid details return the correct shipping rate.\n        \n    - Negative Testing: Missing or invalid input fields such as `country`, `weight`, or `postcode`.\n        \n\n## API Structure and Key Highlights\n\n- **Base URL**: `https://www-api.pos.com.my/api`\n    \n    - All endpoints use this base URL.\n        \n- **HTTP Methods**:\n    \n    - `GET`: Used for fetching data such as countries or states.\n        \n    - `POST`: Used for operations like calculating shipping rates.\n        \n- **Request Parameters**:\n    \n    - **Query Parameters** (for `GET` requests): Example – `/countries`.\n        \n    - **Form Data** (for `POST` requests): Includes fields like `country`, `weight`, and `postcode`.\n        \n- **Response Structure**:\n    \n    - `[ { \"key\": \"value\" }]`\n        \n        - Returns an array of objects with relevant details such as `CountryCode`, `CountryName`, `stateNm`, etc.\n            \n    - `{ \"data\": null, \"error\": { \"status\": , \"name\": \"\", \"message\": \"\", \"details\": {} }}`\n        \n        - Contains fields such as `status`, `name`, and `message` for troubleshooting issues.\n            \n\n## Test Coverage\n\n1. **Response Validation**:\n    \n    - Ensures the response contains the expected fields and data types.\n        \n2. **Status Code Verification**:\n    \n    - Confirms appropriate HTTP status codes (e.g., 200, 404, 400).\n        \n3. **Performance Testing**:\n    \n    - Validates that response times are within acceptable limits (under 5 seconds).\n        \n4. **Error Handling**:\n    \n    - Ensures the API handles invalid inputs gracefully, returning meaningful error messages.\n        \n\n## Notes\n\n- The collection is designed with modular and reusable variables defined in the **POS Malaysia** environment.\n    \n- Each request includes detailed test scripts to automate validation of API functionality.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4354008",
+		"_collection_link": "https://crimson-meteor-868384.postman.co/workspace/2945e0c4-8672-47d7-b4d1-54dc09a6a3be/collection/4354008-ff809c6b-d9ff-4e7c-8f60-03392b1a154a?action=share&source=collection_link&creator=4354008"
+	},
+	"item": [
+		{
+			"name": "Get List of Countries Api Testing",
+			"item": [
+				{
+					"name": "List all the Countries(Positive Test)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//lists all the Countries available in the “To” dropdown",
+									"",
+									"//Verify response code is 200.",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"//Verify CountryName and CountryCode display correctly",
+									"var responseBody = pm.response.json();",
+									"",
+									"pm.test(\"Display CountryName and CountryCode Correctly\", function () {",
+									"    pm.expect(responseBody).to.be.an(\"array\").that.is.not.empty;",
+									"    responseBody.forEach((item, index) => {",
+									"        pm.expect(item).to.have.property(\"CountryCode\");",
+									"        pm.expect(item.CountryCode).to.be.a(\"string\").that.is.not.empty;",
+									"        pm.expect(item).to.have.property(\"CountryName\");",
+									"        pm.expect(item.CountryName).to.be.a(\"string\").that.is.not.empty;",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{pos_url}}/countries"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get States of Malaysia Api Testing",
+			"item": [
+				{
+					"name": "Get states using postal code(Get states using postal code(Valid Postcode)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify status is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"// Parse the JSON response body",
+									"var responseBody = pm.response.json();",
+									"",
+									"",
+									"// Verify that the response contains valid state, city, and postcode",
+									"pm.test(\"Response contains valid state, city, and postCode\", function () {",
+									"    pm.expect(responseBody.stateNm).to.eql(pm.environment.get(\"{{state}}\"));",
+									"    pm.expect(responseBody.stateCd).to.eql(pm.environment.get(\"{{statecode}}\"));",
+									"    pm.expect(responseBody.city).to.eql(pm.environment.get(\"{{city}}\"));",
+									"    pm.expect(responseBody.postCode).to.eql(pm.environment.get(\"{{postcode}}\"));",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "postCode",
+									"value": "{{postcode}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{pos_url}}/getStateByPostcode"
+					},
+					"response": []
+				},
+				{
+					"name": "Get states using postal code(Invalid Postcode).",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body",
+									"var responseBody = pm.response.json();",
+									"",
+									"// Verify status is 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"// Check if `data` is null (postcode null scenario)",
+									"pm.test(\"Postcode is null, please enter valid postcode\", function () {",
+									"    pm.expect(responseBody.data).to.be.null;",
+									"});",
+									"",
+									"// Validate error response if postcode is invalid",
+									"var responseBody = pm.response.json();",
+									"pm.test(\"Postcode is invalid, please enter valid postcode'\", function () {",
+									"if (responseBody.data){  ",
+									"        pm.expect(responseBody.data.error.status).to.eql(\"400\");",
+									"        pm.expect(responseBody.data.error.name).to.eql(\"Error\");",
+									"        pm.expect(responseBody.data.error.mesage).to.eql(\"Post Code Not Exist\");",
+									"}",
+									"else {",
+									"        // If `data` is null, log a message for debugging",
+									"        console.log(\"Data is null, cannot check error details.\");",
+									"    }",
+									"});",
+									"   "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "postCode",
+									"value": "{{InvalidPostcode}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{pos_url}}/getStateByPostcode"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rate calculator Api Testing",
+			"item": [
+				{
+					"name": "Shipping Quote Calculates",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response body",
+									"var responseBody = pm.response.json();",
+									"",
+									"// Verify status is 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Check if `data` is null (postcode null scenario)",
+									"pm.test(\"Postcode is null, please enter valid postcode\", function () {",
+									"    // Check if `data` exists, and if it does, assert that it is null",
+									"    if (responseBody.data === undefined) {",
+									"        console.log(\"Data is undefined, cannot check if it's null.\");",
+									"    } else {",
+									"        pm.expect(responseBody.data).to.be.null;",
+									"    }",
+									"});",
+									"",
+									"// Define expected value (replace this with the actual expected value)",
+									"var expectedValue = \"yourExpectedValue\"; // Modify this to your actual expected value",
+									"",
+									"// Postcode is valid, display the quote",
+									"pm.test(\"Your Shipping Price Quote is ready for your\", function () {",
+									"    if (responseBody.data) {  ",
+									"        pm.expect(responseBody.first).to.contain(expectedValue);",
+									"        pm.expect(responseBody.next).to.contain(expectedValue);",
+									"        pm.expect(responseBody.amount).to.contain(expectedValue);",
+									"        pm.expect(responseBody.maxWeight).to.contain(expectedValue);",
+									"        pm.expect(responseBody.totalAmount).to.contain(expectedValue);",
+									"        pm.expect(responseBody.zone).to.contain(expectedValue);",
+									"        pm.expect(responseBody.fuelCharge).to.contain(expectedValue);",
+									"        pm.expect(responseBody.handlingCharge).to.contain(expectedValue);",
+									"        pm.expect(responseBody.SST).to.contain(expectedValue);",
+									"        pm.expect(responseBody.stateFrom).to.contain(expectedValue);",
+									"    } else {",
+									"        // If `data` is null, log a message for debugging",
+									"        console.log(\"Data is null, cannot check error details.\");",
+									"    }",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "country",
+									"value": "Malaysia",
+									"type": "text"
+								},
+								{
+									"key": "weight",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "postcodeFrom",
+									"value": "50000",
+									"type": "text"
+								},
+								{
+									"key": "postcodeTo",
+									"value": "63000",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{pos_url}}/price"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
